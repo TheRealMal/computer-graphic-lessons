@@ -1,0 +1,179 @@
+<HTML>
+<style>
+	body {
+		margin: 0;
+	}
+	canvas#therealmal {
+		display: block;
+	}
+</style>
+<BODY>
+	<canvas id='therealmal' width="10000" height="10000"></canvas>
+	<script>
+		const canvas = document.getElementById("therealmal");
+		const context = canvas.getContext("2d");
+		const canvasBackgroundColor = "#000000";
+		/* Fullscrean canvas */
+		// Clears canvas onload / onresize;
+		/*
+		window.onload = () => {
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight;
+		}
+		window.onresize = () => {
+			canvas.width = document.body.clientWidth;
+			canvas.height = document.body.clientHeight;
+			console.log("Window resized;");
+		}
+		*/
+		
+		var pixelSize = 8;
+		
+		function px(x, y, pixResize=1){
+			context.fillRect(x * pixelSize, y * pixelSize, pixResize * pixelSize, pixResize * pixelSize);
+		}
+		function clearBackground(){
+			context.fillStyle = canvasBackgroundColor;
+			px(0, 0, canvas.width / pixelSize);
+		}
+		clearBackground();
+
+		// Cell sizes
+		// w: 6
+		// h: 8
+		function drawZero(x, y, color="#000000"){
+			context.fillStyle = color;
+			for (let i = 1; i < 5; i++){
+				px(x + i, y);
+			}
+			for (let i = 1; i < 7; i++){
+				px(x, y + i);
+			}
+			for (let i = 1; i < 7; i++){
+				px(x + 5, y + i);
+			}
+			for (let i = 1; i < 5; i++){
+				px(x + i, y + 7);
+			}
+		}
+
+		function drawOne(x, y, color="#000000"){
+			context.fillStyle = color;
+			px(x + 2, y + 1);
+			px(x + 2.5, y + 0.5, 0.5);
+			px(x + 1.5, y + 1.5, 0.5);
+			px(x + 2, y + 2, 0.5);
+			px(x + 1, y + 2);
+			for (let i = 0; i < 7; i++){
+				px(x + 3, y + i);
+			}
+			for (let i = 1; i < 5; i++){
+				px(x + i, y + 7);
+			}
+		}
+		
+		function clearCell(x, y){
+			context.fillStyle = canvasBackgroundColor;
+			for (let i = 0; i < 8; i++){
+				for (let j = 0; j < 6; j++){
+					context.fillStyle = canvasBackgroundColor;
+					px(x + j, y + i);
+				}
+			}
+		}
+
+		function drawMatrice(height, width, mode="random"){
+			for (let i = 0; i < height; i++){
+				for (let j = 0; j < width; j++){
+					clearCell(j*7, i*9);
+				}
+			}
+			if (mode == "random"){
+				for (let i = 0; i < height; i++){
+					for (let j = 0; j < width; j+=2){
+						switch(Math.floor(Math.random() * 2)){
+							case 0:
+								drawZero(j*7, i*9, "#00BB00");
+								break;
+							case 1:
+								drawOne(j*7, i*9, "#00BB00");
+								break
+						}
+						if (j + 1 < width){
+							switch(Math.floor(Math.random() * 2)){
+								case 0:
+									drawZero(j*7+7, i*9, "#00BB00");
+									break;
+								case 1:
+									drawOne(j*7+7, i*9, "#00BB00");
+									break
+							}
+						}
+					}
+				}
+			} else if (mode == "1"){
+				for (let i = 0; i < height; i++){
+					for (let j = 0; j < width; j+=2){
+						drawOne(j*7, i*9, "#00BB00");
+						if (j + 1 < width){
+							drawOne(j*7+7, i*9, "#00BB00");
+						}
+					}
+				}
+			} else if (mode == "0"){
+				for (let i = 0; i < height; i++){
+					for (let j = 0; j < width; j+=2){
+						drawZero(j*7, i*9, "#00BB00");
+						if (j + 1 < width){
+							drawZero(j*7+7, i*9, "#00BB00");
+						}
+					}
+				}
+			}
+		}
+		// Random matrice
+		/*
+		var matriceMeta = {
+			width: 10,
+			height: 10
+		}
+		setInterval(() => {
+			drawMatrice(matriceMeta.height, matriceMeta.width);
+		}, 100);
+		*/
+
+		// "1" Square motion
+		var motionMeta = {
+			x: 0,
+			y: 0,
+			delta: 90,
+			width: 10,
+			height: 10
+		}
+		setInterval(() => {
+			if (motionMeta.y == 0 && motionMeta.x < motionMeta.width){
+				clearCell(0, 9);
+				clearCell(motionMeta.x*7, motionMeta.y*9);
+				motionMeta.x++;
+				drawOne(motionMeta.x*7, motionMeta.y*9, "#00BB00");
+			} else if (motionMeta.x == motionMeta.width && motionMeta.y < motionMeta.height){
+				clearCell(motionMeta.x*7, motionMeta.y*9);
+				motionMeta.y++;
+				drawOne(motionMeta.x*7, motionMeta.y*9, "#00BB00");
+			} else if (motionMeta.y == motionMeta.height && motionMeta.x <= motionMeta.width && motionMeta.x != 0) {
+				clearCell(motionMeta.x*7, motionMeta.y*9);
+				motionMeta.x--;
+				drawOne(motionMeta.x*7, motionMeta.y*9, "#00BB00");
+			} else if (motionMeta.x == 0 && motionMeta.y <= motionMeta.height){
+				clearCell(motionMeta.x*7, motionMeta.y*9);
+				motionMeta.y--;
+				drawOne(motionMeta.x*7, motionMeta.y*9, "#00BB00");
+			}
+		}, motionMeta.delta)
+
+		canvas.addEventListener('mousedown', function (e){
+			console.log("mousedown", e.clientX, " ", e.clientY);
+		});
+	</script>
+</BODY>
+</HTML>
