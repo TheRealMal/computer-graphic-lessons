@@ -1,0 +1,60 @@
+<HTML>
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas#therealmal {
+            display: block;
+        }
+    </style>
+    <BODY>
+        <canvas id='therealmal' width="1000" height="1000"></canvas>
+        <script>
+            function drawLine(imageData, x0, y0, x1, y1){
+                const dX = Math.abs(x1 - x0);
+                const dY = Math.abs(y1 - y0);
+                const signs = [x0 < x1 ? 1 : -1, y0 < y1 ? 1 : -1];
+                var error = dX - dY;
+                var error_ = 0;
+                do {
+                    for (let i = 0; i < 5; i++){
+                        for (let j = 0; j < 5; j++){
+                            imageData.data[((x0 + i) + (y0 + j) * imageData.width)*4] = 255;
+                            imageData.data[((x0 + i) + (y0 + j) * imageData.width)*4+1] = 100;
+                            imageData.data[((x0 + i) + (y0 + j) * imageData.width)*4+2] = 100;
+                            imageData.data[((x0 + i) + (y0 + j) * imageData.width)*4+3] = 255;
+                        }
+                    }
+                    error_ = error * 2;
+                    if (error_ > -dY){
+                        error -= dY;
+                        x0 += signs[0];
+                    }
+                    if (error_ < dX){
+                        error += dX;
+                        y0 += signs[1];
+                    }
+                } while (x0 !== x1 || y0 !== y0)
+            }
+        </script>
+        <script>
+            const canvas = document.getElementById("therealmal");
+            const context = canvas.getContext("2d");
+            var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+            var flag = 0;
+            var coords = [0, 0];
+            canvas.addEventListener("click", function(event){
+                var offset = [event.offsetX, event.offsetY];
+                if (!flag){
+                    coords = [event.offsetX, event.offsetY];
+                } else {
+                    drawLine(imageData, coords[0], coords[1], offset[0], offset[1]);
+                    context.putImageData(imageData, 0, 0)
+                }
+                flag = !flag
+            })
+        </script>
+    </BODY>
+    </HTML>
+    
