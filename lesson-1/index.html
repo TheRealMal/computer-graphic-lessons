@@ -8,24 +8,11 @@
 	}
 </style>
 <BODY>
-	<canvas id='therealmal' width="10000" height="10000"></canvas>
+	<canvas id='therealmal' width="1000" height="1000"></canvas>
 	<script>
 		const canvas = document.getElementById("therealmal");
 		const context = canvas.getContext("2d");
-		const canvasBackgroundColor = "#000000";
-		/* Fullscrean canvas */
-		// Clears canvas onload / onresize;
-		/*
-		window.onload = () => {
-			canvas.width = document.body.clientWidth;
-			canvas.height = document.body.clientHeight;
-		}
-		window.onresize = () => {
-			canvas.width = document.body.clientWidth;
-			canvas.height = document.body.clientHeight;
-			console.log("Window resized;");
-		}
-		*/
+		const canvasBackgroundColor = "#FFFFFF";
 		
 		var pixelSize = 8;
 		

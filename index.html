@@ -1,0 +1,76 @@
+<HTML>
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas#therealmal {
+            display: block;
+        }
+    </style>
+    <BODY>
+        <canvas id='therealmal' width="1000" height="1000"></canvas>
+        <script>
+            const canvas = document.getElementById("therealmal");
+            const context = canvas.getContext("2d");
+    
+            var imageData = context.getImageData(0, 0, 100, 100)
+            
+            var pixelSize = 8;
+            var figureSize = 50
+
+            function addPixel(x, y, width, r, g, b, a){
+                imageData.data[y * (width * 4) + x * 4 + 0] = r
+                imageData.data[y * (width * 4) + x * 4 + 1] = g
+                imageData.data[y * (width * 4) + x * 4 + 2] = b
+                imageData.data[y * (width * 4) + x * 4 + 3] = a
+            }
+
+            function draw(x, y, width){
+                for (let i = 0; i < width * 4; i += 1){
+                    for (let j = 0; j < width * 4; j += 1){
+                        addPixel(i, j, width, 255, 100, 100, 255);
+                    }
+                }
+                context.putImageData(imageData, x, x)
+            }
+            function clear(x, y, width){
+                for (let i = 0; i < width * 4; i += 1){
+                    for (let j = 0; j < width * 4; j += 1){
+                        addPixel(i, j, width, 255, 255, 255, 255);
+                    }
+                }
+                context.putImageData(imageData, x, x)
+            }
+            
+            var motionMeta = {
+                x: 0,
+                y: 0,
+                delta: 30,
+                width: 60,
+                height: 60
+            }
+            setInterval(() => {
+                if (motionMeta.y == 0 && motionMeta.x < motionMeta.width){
+                    clear(0, 9, figureSize);
+                    clear(motionMeta.x*7, motionMeta.y*9, figureSize)
+                    motionMeta.x++;
+                    draw(motionMeta.x*7, motionMeta.y*9, figureSize)
+                } else if (motionMeta.x == motionMeta.width && motionMeta.y < motionMeta.height){
+                    clear(motionMeta.x*7, motionMeta.y*9, figureSize);
+                    motionMeta.y++;
+                    draw(motionMeta.x*7, motionMeta.y*9, figureSize);
+                } else if (motionMeta.y == motionMeta.height && motionMeta.x <= motionMeta.width && motionMeta.x != 0) {
+                    clear(motionMeta.x*7, motionMeta.y*9, figureSize);
+                    motionMeta.x--;
+                    draw(motionMeta.x*7, motionMeta.y*9, figureSize);
+                } else if (motionMeta.x == 0 && motionMeta.y <= motionMeta.height){
+                    clear(motionMeta.x*7, motionMeta.y*9, figureSize);
+                    motionMeta.y--;
+                    draw(motionMeta.x*7, motionMeta.y*9, figureSize);
+                }
+            }, motionMeta.delta)
+
+        </script>
+    </BODY>
+    </HTML>
+    
