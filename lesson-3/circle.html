@@ -26,31 +26,42 @@
             }
 
 
-            function setColor(x, y, imageData){
-                for (let i = 0; i < 3; i++){
+            function setColor(x, y, imageData, fade=true){
+                if (fade){
+                    for (let i = 0; i < 3; i++){
                         for (let j = 0; j < 3; j++){
-                            imageData.data[((x + i) + (y + j) * imageData.width)*4] = 255;
-                            imageData.data[((x + i) + (y + j) * imageData.width)*4+1] = 100;
-                            imageData.data[((x + i) + (y + j) * imageData.width)*4+2] = 100;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4] = x % 255;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+1] = y % 255;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+2] = 255 - x;
                             imageData.data[((x + i) + (y + j) * imageData.width)*4+3] = 255;
                         }
                     }
+                } else {
+                    for (let i = 0; i < 3; i++){
+                        for (let j = 0; j < 3; j++){
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4] = 0;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+1] = 0;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+2] = 0;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+3] = 255;
+                        }
+                    }
+                }
             }
-            function drawCircle(imageData, xc, yc, x, y){
-                setColor(xc+x, yc+y, imageData);
-                setColor(xc-x, yc+y, imageData);
-                setColor(xc+x, yc-y, imageData);
-                setColor(xc-x, yc-y, imageData);
-                setColor(xc+y, yc+x, imageData);
-                setColor(xc-y, yc+x, imageData);
-                setColor(xc+y, yc-x, imageData);
-                setColor(xc-y, yc-x, imageData);
+            function drawCircle(imageData, xc, yc, x, y, fade){
+                setColor(xc+x, yc+y, imageData, fade);
+                setColor(xc-x, yc+y, imageData, fade);
+                setColor(xc+x, yc-y, imageData, fade);
+                setColor(xc-x, yc-y, imageData, fade);
+                setColor(xc+y, yc+x, imageData, fade);
+                setColor(xc-y, yc+x, imageData, fade);
+                setColor(xc+y, yc-x, imageData, fade);
+                setColor(xc-y, yc-x, imageData, fade);
             }
-            function drawCircleLoop(imageData, xc, yc, r){
+            function drawCircleLoop(imageData, xc, yc, r, fade){
                 x = 0;
                 y = r;
                 d = 3 - 2 * r;
-                drawCircle(imageData, xc, yc, x, y);
+                drawCircle(imageData, xc, yc, x, y, fade);
                 while (y >= x){
                     x++;
                     if (d > 0){
@@ -59,7 +70,7 @@
                     } else {
                         d = d +4 * x + 6;
                     }
-                    drawCircle(imageData, xc, yc, x, y);
+                    drawCircle(imageData, xc, yc, x, y, fade);
                 }
             }
         </script>
@@ -67,7 +78,11 @@
             const canvas = document.getElementById("therealmal");
             const context = canvas.getContext("2d");
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            drawCircleLoop(imageData, 150, 150, 100);
+            drawCircleLoop(imageData, 150, 150, 100, true);
+            drawCircleLoop(imageData, 150, 150, 90, false);
+            drawCircleLoop(imageData, 150, 150, 80, true);
+            drawCircleLoop(imageData, 150, 150, 70, false);
+            drawCircleLoop(imageData, 150, 150, 60, true);
             context.putImageData(imageData, 0, 0);
         </script>
     </BODY>
