@@ -1,0 +1,75 @@
+<HTML>
+    <style>
+        body {
+            margin: 0;
+        }
+        canvas#therealmal {
+            display: block;
+        }
+    </style>
+    <BODY>
+        <canvas id='therealmal' width="1000" height="1000"></canvas>
+        <script>
+            function calcCrow(lat1, lon1, lat2, lon2){
+                var dLat = toRad(lat2-lat1);
+                var dLon = toRad(lon2-lon1);
+                var lat1 = toRad(lat1);
+                var lat2 = toRad(lat2);
+
+                var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+                var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+                return c;
+            }
+            function toRad(Value){
+                return Value * Math.PI / 180;
+            }
+
+
+            function setColor(x, y, imageData){
+                for (let i = 0; i < 3; i++){
+                        for (let j = 0; j < 3; j++){
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4] = 255;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+1] = 100;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+2] = 100;
+                            imageData.data[((x + i) + (y + j) * imageData.width)*4+3] = 255;
+                        }
+                    }
+            }
+            function drawCircle(imageData, xc, yc, x, y){
+                setColor(xc+x, yc+y, imageData);
+                setColor(xc-x, yc+y, imageData);
+                setColor(xc+x, yc-y, imageData);
+                setColor(xc-x, yc-y, imageData);
+                setColor(xc+y, yc+x, imageData);
+                setColor(xc-y, yc+x, imageData);
+                setColor(xc+y, yc-x, imageData);
+                setColor(xc-y, yc-x, imageData);
+            }
+            function drawCircleLoop(imageData, xc, yc, r){
+                x = 0;
+                y = r;
+                d = 3 - 2 * r;
+                drawCircle(imageData, xc, yc, x, y);
+                while (y >= x){
+                    x++;
+                    if (d > 0){
+                        y--;
+                        d = d + 4 * (x - y) + 10;
+                    } else {
+                        d = d +4 * x + 6;
+                    }
+                    drawCircle(imageData, xc, yc, x, y);
+                }
+            }
+        </script>
+        <script>
+            const canvas = document.getElementById("therealmal");
+            const context = canvas.getContext("2d");
+            var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            drawCircleLoop(imageData, 150, 150, 100);
+            context.putImageData(imageData, 0, 0);
+        </script>
+    </BODY>
+    </HTML>
+    
