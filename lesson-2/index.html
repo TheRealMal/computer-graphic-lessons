@@ -16,7 +16,7 @@
             var imageData = context.getImageData(0, 0, 100, 100)
             
             var pixelSize = 8;
-            var figureSize = 50
+            var figureSize = 100
 
             function addPixel(x, y, width, r, g, b, a){
                 imageData.data[y * (width * 4) + x * 4 + 0] = r
@@ -26,16 +26,16 @@
             }
 
             function draw(x, y, width){
-                for (let i = 0; i < width * 4; i += 1){
-                    for (let j = 0; j < width * 4; j += 1){
+                for (let j = 0; j < width; j++){
+                    for (let i = 0; i < j; i++){
                         addPixel(i, j, width, 255, 100, 100, 255);
                     }
                 }
                 context.putImageData(imageData, x, x)
             }
             function clear(x, y, width){
-                for (let i = 0; i < width * 4; i += 1){
-                    for (let j = 0; j < width * 4; j += 1){
+                for (let j = 0; j < width; j++){
+                    for (let i = 0; i < j; i++){
                         addPixel(i, j, width, 255, 255, 255, 255);
                     }
                 }
