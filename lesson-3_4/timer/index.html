@@ -17,6 +17,7 @@
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = "#000000";
         ctx.font = 'bold 30px sans-serif';
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         function fillNums(x0, y0) {
             var x = x0 - 300
@@ -43,28 +44,87 @@
         function dFd(x, y) {
             return 4 * y + 4 * x + 10;
         }
+
+        function setColor(x, y, imageData){
+            for (let i = 0; i < 3; i++){
+                for (let j = 0; j < 3; j++){
+                    imageData.data[((x + i) + (y + j) * imageData.width)*4] = x % 255;
+                    imageData.data[((x + i) + (y + j) * imageData.width)*4+1] = y % 255;
+                    imageData.data[((x + i) + (y + j) * imageData.width)*4+2] = (255 - x) % 255;
+                    imageData.data[((x + i) + (y + j) * imageData.width)*4+3] = 255;
+                }
+            }
+        }
+        function drawCircle(imageData, xc, yc, x, y){
+            setColor(xc+x, yc+y, imageData);
+            setColor(xc-x, yc+y, imageData);
+            setColor(xc+x, yc-y, imageData);
+            setColor(xc-x, yc-y, imageData);
+            setColor(xc+y, yc+x, imageData);
+            setColor(xc-y, yc+x, imageData);
+            setColor(xc+y, yc-x, imageData);
+            setColor(xc-y, yc-x, imageData);
+        }
+        function drawCircleLoop(imageData, xc, yc, r){
+            x = 0;
+            y = r;
+            d = 3 - 2 * r;
+            drawCircle(imageData, xc, yc, x, y);
+            while (y >= x){
+                x++;
+                if (d > 0){
+                    y--;
+                    d = d + 4 * (x - y) + 10;
+                } else {
+                    d = d +4 * x + 6;
+                }
+                drawCircle(imageData, xc, yc, x, y);
+            }
+        }
         function drawCircle(R) {
             let x = -R;
             let y = 0;
             let F = 1 - 2 * R;
             while (y <= Math.abs(x)) {
-                ctx.fillStyle = "#000000";
+                ctx.fillStyle = `rgb(
+                    ${x + 300 % 255},
+                    ${y + 300 % 255},
+                    ${(255 - (x + 300)) % 255})`;
                 ctx.fillRect(x + 300, y + 300, 2, 2);
+                ctx.fillStyle = `rgb(
+                    ${-y + 300 % 255},
+                    ${-x + 300 % 255},
+                    ${(255 - (-y + 300)) % 255})`;
                 ctx.fillRect(-y + 300, -x + 300, 2, 2);
-
-                ctx.fillStyle = "#9a079a";
+                ctx.fillStyle = `rgb(
+                    ${-x + 300 % 255},
+                    ${y + 300 % 255},
+                    ${(255 - (-x + 300)) % 255})`;
                 ctx.fillRect(-x + 300, y + 300, 2, 2);
-                ctx.fillStyle = "#ff00ff";
+                ctx.fillStyle = `rgb(
+                    ${y + 300 % 255},
+                    ${-x + 300 % 255},
+                    ${(255 - (y + 300)) % 255})`;
                 ctx.fillRect(y + 300, -x + 300, 2, 2);
-
-                ctx.fillStyle = "#940404";
+                ctx.fillStyle = `rgb(
+                    ${-x + 300 % 255},
+                    ${-y + 300 % 255},
+                    ${(255 - (-x + 300)) % 255})`;
                 ctx.fillRect(-x + 300, -y + 300, 2, 2);
-                ctx.fillStyle = "#ff0000";
+                ctx.fillStyle = `rgb(
+                    ${y + 300 % 255},
+                    ${x + 300 % 255},
+                    ${(255 - (y + 300)) % 255})`;
                 ctx.fillRect(y + 300, x + 300, 2, 2);
-
-                ctx.fillStyle = "#07a607";
+                ctx.fillStyle = `rgb(
+                    ${x + 300 % 255},
+                    ${-y + 300 % 255},
+                    ${(255 - (x + 300)) % 255})`;
                 ctx.fillRect(x + 300, -y + 300, 2, 2);
-                ctx.fillStyle = "#00ff00";
+                ctx.fillStyle = `rgb(
+                    ${-y + 300 % 255},
+                    ${x + 300 % 255},
+                    ${(255 - (-y + 300)) % 255})`;
                 ctx.fillRect(-y + 300, x + 300, 2, 2);
 
                 if (F < 0) {
@@ -119,8 +179,8 @@
             R: 200
         }
         fillNums(meta.x0, meta.y0)
-        drawCircle(meta.R+50)
-
+        drawCircle(meta.R + 50)
+        
         setInterval(function () {
             var date = new Date();
             document.getElementById("demo").innerHTML = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
